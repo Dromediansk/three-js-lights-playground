@@ -1,5 +1,8 @@
 export default {
-    root: 'src/',
-    publicDir: '../static/',
-    base: './',
-}
+  base: "/three-js-lights-playground/",
+  root: "src/",
+  publicDir: "../static/",
+  build: {
+    outDir: "../dist/",
+  },
+};
