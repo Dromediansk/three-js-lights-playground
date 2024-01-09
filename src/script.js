@@ -27,32 +27,23 @@ const material = new THREE.MeshStandardMaterial({
 
 const box = new THREE.Mesh(boxGeometry, material);
 box.position.x = -2;
-
-const box2 = new THREE.Mesh(boxGeometry, material);
-box2.position.x = -2;
-box2.position.z = -2;
+box.castShadow = true;
 
 const sphere = new THREE.Mesh(sphereGeometry, material);
 sphere.position.x = 0;
-
-const sphere2 = new THREE.Mesh(sphereGeometry, material);
-sphere2.position.x = 0;
-sphere2.position.z = -2;
+sphere.castShadow = true;
 
 const torusKnot = new THREE.Mesh(torusKnotGeometry, material);
 torusKnot.position.x = 2;
+torusKnot.castShadow = true;
 
-const torusKnot2 = new THREE.Mesh(torusKnotGeometry, material);
-torusKnot2.position.x = 2;
-torusKnot2.position.z = -2;
+const plane = new THREE.Mesh(circleGeometry, material);
+plane.scale.setScalar(20);
+plane.position.y = -1;
+plane.rotation.x = -Math.PI / 2;
+plane.receiveShadow = true;
 
-const circle = new THREE.Mesh(circleGeometry, material);
-circle.scale.setScalar(20);
-circle.position.y = -2;
-circle.rotation.x = -Math.PI / 2;
-
-scene.add(box, sphere, torusKnot, circle);
-scene.add(box2, sphere2, torusKnot2);
+scene.add(box, sphere, torusKnot, plane);
 
 // initialize the light
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
@@ -90,10 +81,15 @@ hemisphericLightFolder.addInput(hemishpereLight, "intensity", {
   step: 0.01,
 });
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+const directionalLight = new THREE.DirectionalLight("green", 0.5);
 scene.add(directionalLight);
 directionalLight.position.x = -5;
 directionalLight.position.y = 5;
+
+directionalLight.castShadow = true;
+directionalLight.shadow.mapSize.width = 1024;
+directionalLight.shadow.mapSize.height = 1024;
+directionalLight.shadow.radius = 10;
 
 const directionalLightHelper = new THREE.DirectionalLightHelper(
   directionalLight,
@@ -113,12 +109,20 @@ directionalLightFolder.addInput(directionalLight, "intensity", {
   max: 1,
   step: 0.01,
 });
+directionalLightFolder.addInput(directionalLight, "castShadow", {
+  label: "Cast Shadow",
+});
 
 const pointLight = new THREE.PointLight(0xffffff, 0.5, 10);
 scene.add(pointLight);
 
 pointLight.position.x = 3;
 pointLight.position.y = 3;
+
+pointLight.castShadow = true;
+pointLight.shadow.mapSize.width = 1024;
+pointLight.shadow.mapSize.height = 1024;
+pointLight.shadow.radius = 10;
 
 const pointLightHelper = new THREE.PointLightHelper(pointLight, 1);
 scene.add(pointLightHelper);
@@ -134,6 +138,9 @@ pointLightFolder.addInput(pointLight, "intensity", {
   min: 0,
   max: 1,
   step: 0.01,
+});
+pointLightFolder.addInput(pointLight, "castShadow", {
+  label: "Cast Shadow",
 });
 
 const spotLight = new THREE.SpotLight("blue", 0.5);
@@ -216,6 +223,7 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
 
 // instantiate the controls
 const controls = new OrbitControls(camera, canvas);
